@@ -6,7 +6,7 @@ Issue テンプレート2種を含む。
 
 ## 導入
 
-    /plugin marketplace add 0o-taro-o0/claude-plugins
+    /plugin marketplace add 0o-taro-o0/dev-claude-plugins
     /plugin install workflow@taro-plugins
 
 ## プロジェクトへの適用
