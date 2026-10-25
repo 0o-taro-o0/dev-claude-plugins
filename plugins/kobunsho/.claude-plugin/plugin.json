@@ -1,0 +1,8 @@
+{
+  "name": "kobunsho",
+  "description": "日本語の開発文書を、文化審議会の建議「公用文作成の考え方」に沿って書かせる一式。書き方のスキル、レビュー役のエージェント、textlint で書き換えた範囲を検査する hook、textlint の設定と辞書のひな形を含む",
+  "version": "0.1.0",
+  "author": {
+    "name": "0o-taro-o0"
+  }
+}

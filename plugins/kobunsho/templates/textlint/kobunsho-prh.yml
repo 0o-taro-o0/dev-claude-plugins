@@ -1,0 +1,368 @@
+# kobunsho: 確実に直せる表記の辞書（textlint-rule-prh 用）
+#
+# 根拠は「公用文作成の考え方」（令和4年1月7日 文化審議会建議）。
+# 文脈によって正誤が変わる語は、この辞書に入れない。kobunsho-check.js（警告）で扱う。
+# specs は読み込み時に自動で検査される。規則を足すときは specs も足す。
+
+version: 1
+rules:
+
+  # ── 数字（建議 Ⅰ-4 ケ）算用数字を使う横書きでは「か所」「か月」と書く ──
+
+  - expected: $1か所
+    pattern: /([0-9０-９]+)[ヶケカヵ箇]所/
+    specs:
+      - from: 3ヶ所を直した。
+        to:   3か所を直した。
+      - from: 3箇所を直した。
+        to:   3か所を直した。
+  - expected: $1か月
+    pattern: /([0-9０-９]+)[ヶケカヵ箇]月/
+    specs:
+      - from: 7カ月かかった。
+        to:   7か月かかった。
+  - expected: $1か年
+    pattern: /([0-9０-９]+)[ヶケカヵ箇]年/
+    specs:
+      - from: 5ヵ年計画
+        to:   5か年計画
+  - expected: $1か国
+    pattern: /([0-9０-９]+)[ヶケカヵ箇]国/
+    specs:
+      - from: 3ヶ国
+        to:   3か国
+
+  # ── 補助動詞（建議 解説 Ⅰ-1(3)ア）実際の動作を表すときは漢字のまま ──
+  # 「全て行った」「初めて見る」のように、補助動詞でない組み合わせは除外している。
+
+  - expected: $1い$2
+    pattern: /(?<!全)([てで])行([くかきけこ])/
+    specs:
+      - from: 作業を進めて行く。
+        to:   作業を進めていく。
+      - from: 全て行く。
+        to:   全て行く。
+      - from: テストを全て行った。
+        to:   テストを全て行った。
+  - expected: $1いただ$2
+    pattern: /([てで])頂([くかきけこい])/
+    specs:
+      - from: 確認して頂く。
+        to:   確認していただく。
+  - expected: $1くださ$2
+    pattern: /([てで])下さ([いるらっれ])/
+    specs:
+      - from: 修正して下さい。
+        to:   修正してください。
+  - expected: $1くる
+    pattern: /([てで])来る/
+    specs:
+      - from: 人が増えて来る。
+        to:   人が増えてくる。
+  - expected: $1き$2
+    pattern: /([てで])来(た|て|ま)/
+    specs:
+      - from: 人が増えて来た。
+        to:   人が増えてきた。
+      - from: 改めて来月に行う。
+        to:   改めて来月に行う。
+  - expected: $1こ$2
+    pattern: /([てで])来(な|よ)/
+    specs:
+      - from: 返事が返って来ない。
+        to:   返事が返ってこない。
+  - expected: $1み$2
+    pattern: /(?<!初め|改め|全)([てで])見(る|た|て|ます|まし|ませ|ない|よう|れば)/
+    specs:
+      - from: 試して見る。
+        to:   試してみる。
+      - from: 初めて見る。
+        to:   初めて見る。
+  - expected: $1ほし$2
+    pattern: /([てで])欲し(い|く|かっ|けれ)/
+    specs:
+      - from: 見て欲しい。
+        to:   見てほしい。
+  - expected: $1よ$2
+    pattern: /([てで])良(い|く|かっ|けれ)/
+    specs:
+      - from: 使って良い。
+        to:   使ってよい。
+
+  # ── 動詞（建議 解説 Ⅰ-1(3)ウ）──
+
+  - expected: でき
+    pattern: /出来(?=る|な|ま|た|て|れ|ず|そう|よう)/
+    specs:
+      - from: 利用が出来る。
+        to:   利用ができる。
+      - from: 出来ない。
+        to:   できない。
+      - from: 出来が良い。
+        to:   出来が良い。
+      - from: 出来高
+        to:   出来高
+  - expected: い$1
+    pattern: /(?<![鳥芝隠])居(る|ます|まし|ませ|た|て|ない|れ)/
+    specs:
+      - from: ここに居る。
+        to:   ここにいる。
+
+  # ── 形式名詞（建議 解説 Ⅰ-1(3)ア）綴りで判別できるものだけ。事・時・所・物・者は警告側 ──
+
+  - expected: $1とおり
+    pattern: /(の|た|る)通り/
+    specs:
+      - from: 以下の通り定める。
+        to:   以下のとおり定める。
+      - from: 思った通り
+        to:   思ったとおり
+      - from: 大通りに面する。
+        to:   大通りに面する。
+  - expected: $1よう$2
+    pattern: /(の|た|る|じ)様(な|に|だ|で)/
+    specs:
+      - from: 次の様な
+        to:   次のような
+      - from: この様に
+        to:   このように
+      - from: 同様に
+        to:   同様に
+      - from: 仕様に
+        to:   仕様に
+  - expected: $1ため$2
+    pattern: /(の|た|る|い)為(に|の|、|だ|で|。)/
+    specs:
+      - from: その為に修正する。
+        to:   そのために修正する。
+      - from: 行為に及ぶ。
+        to:   行為に及ぶ。
+  - expected: $1わけ$2
+    pattern: /(る|た|ない)訳(では|に|が|だ|で|は|も|。)/
+    specs:
+      - from: そうする訳にはいかない。
+        to:   そうするわけにはいかない。
+      - from: 言い訳にならない。
+        to:   言い訳にならない。
+  - expected: それゆえ
+    pattern: それ故
+  - expected: $1とともに
+    pattern: /(る|た|い)と共に/
+    specs:
+      - from: 確認すると共に
+        to:   確認するとともに
+
+  # ── 接続詞（建議 解説 Ⅰ-1(3)イ）及び・又は・並びに・若しくは は漢字のまま ──
+
+  - expected: $1したがって、
+    pattern: /(^|。)従って、/
+    specs:
+      - from: 従って、修正する。
+        to:   したがって、修正する。
+      - from: 規則に従って、修正する。
+        to:   規則に従って、修正する。
+  - expected: $1また、
+    pattern: /(^|。)又、/
+  - expected: $1なお、
+    pattern: /(^|。)尚、/
+  - expected: ただし
+    pattern: 但し
+  - expected: ただし書
+    pattern: 但書
+  - expected: かつ
+    pattern: 且つ
+  - expected: すなわち
+    pattern: 即ち
+  - expected: しかし
+    pattern: 然し
+  - expected: あるいは
+    pattern: 或いは
+
+  # ── 副詞・当て字・表外の訓（建議 解説 Ⅰ-1(2)(3)）──
+  # 「既に」「直ちに」「正に」「余り」「飽くまで」は漢字で書く語なので、ここに入れない。
+
+  - expected: いろいろ
+    pattern: 色々
+  - expected: たくさん
+    pattern: 沢山
+  - expected: ちょうど
+    pattern: 丁度
+  - expected: よほど
+    pattern: 余程
+  - expected: おおむね
+    pattern: 概ね
+  - expected: おのずから
+    pattern: 自ずから
+  - expected: あえて
+    pattern: 敢えて
+  - expected: あらかじめ
+    pattern: 予め
+  - expected: いまだに
+    pattern: 未だに
+  - expected: よろしく
+    pattern: 宜しく
+  - expected: ほとんど
+    pattern: 殆ど
+  - expected: さすが
+    pattern: 流石
+  - expected: すばらし
+    pattern: 素晴らし
+  - expected: ふだん
+    pattern: 普段
+  - expected: めった
+    pattern: 滅多
+  - expected: なぜ
+    pattern: 何故
+  - expected: およそ
+    pattern: 凡そ
+  - expected: それぞれ
+    pattern: /夫々|其々/
+  - expected: はず
+    pattern: 筈
+  - expected: まで
+    pattern: 迄
+  - expected: きれい
+    pattern: 綺麗
+  - expected: はかど$1
+    pattern: /捗(る|ら|り|っ|れ)/
+    specs:
+      - from: 作業が捗る。
+        to:   作業がはかどる。
+      - from: 進捗する。
+        to:   進捗する。
+
+  # ── 表外漢字を含む語の書き換え（建議 解説 Ⅰ-1(2)）開発文書でよく使うもの ──
+
+  - expected: ひも付
+    pattern: 紐付
+  - expected: ひもづ
+    pattern: 紐づ
+  - expected: 食い違い
+    pattern: 齟齬
+  - expected: つな$1
+    pattern: /繋([がぎぐげごい])/
+    specs:
+      - from: 処理を繋ぐ。
+        to:   処理をつなぐ。
+  - expected: まと$1
+    pattern: /纏([めまむ])/
+  - expected: そろ$1
+    pattern: /揃([えうっわいお])/
+  - expected: たど$1
+    pattern: /辿([るらりっれろ])/
+  - expected: つか$1
+    pattern: /掴([むまみめもん])/
+  - expected: たま$1
+    pattern: /溜ま([るらりっれ])/
+  - expected: ため$1
+    pattern: /溜め([るらたてな])/
+  - expected: はま$1
+    pattern: /嵌ま([るらりっれ])/
+  - expected: はめ$1
+    pattern: /嵌め([るらたてな])/
+  - expected: うた$1
+    pattern: /謳([うわいっえお])/
+  - expected: のぞ$1
+    pattern: /覗([くかきけこい])/
+  - expected: なじ$1
+    pattern: /馴染([むまみめもん])/
+  - expected: ずさん
+    pattern: 杜撰
+  - expected: まれ
+    pattern: 稀
+
+  # ── 字体（建議 解説 Ⅰ-1(1)イ）常用漢字表の通用字体を用いる ──
+
+  - expected: 塡
+    pattern: 填
+  - expected: 頰
+    pattern: 頬
+  - expected: 剝
+    pattern: 剥
+
+  # ── 送り仮名（「送り仮名の付け方」本則）──
+
+  - expected: 行$1
+    pattern: /行な([うわいっえお])/
+    specs:
+      - from: 確認を行なう。
+        to:   確認を行う。
+  - expected: 表$1
+    pattern: /表わ([すさしせそ])/
+  - expected: 現$1
+    pattern: /現わ([れるた])/
+  - expected: 断$1
+    pattern: /断わ([るらりっれろ])/
+  - expected: 終わ$1
+    pattern: /終(る|ら|り|っ|れ|ろ)/
+    specs:
+      - from: 作業が終る。
+        to:   作業が終わる。
+      - from: 作業が終わる。
+        to:   作業が終わる。
+  - expected: 押さえ
+    pattern: 押え
+  - expected: 捕らえ
+    pattern: 捕え
+
+  # ── 外来語の長音（建議 解説 Ⅰ-3エ）英語の -er、-or、-ar に当たるものは長音符号を付ける ──
+  # 「-ry」「-ty」で終わる語（リポジトリなど）は開発分野で慣用が割れているため、警告側で扱う。
+
+  - expected: $1ー
+    pattern: /(サーバ|ユーザ|フォルダ|パラメータ|ブラウザ|エディタ|コンピュータ|プリンタ|コンバータ|アダプタ|ドライバ|コントローラ|ハンドラ|ヘッダ|フッタ|マネージャ|プロバイダ|レンダラ|パーサ|インタプリタ|コンパイラ|デバッガ|スケジューラ|ルータ|レイヤ|ポインタ|カウンタ|フィルタ|クラスタ|セレクタ|モニタ|イテレータ|ジェネレータ|エクスプローラ|インストーラ|コンテナ|リスナ|ビルダ|ローダ|ワーカ|プロセッサ|エミュレータ|シミュレータ|オペレータ|バッファ)(?![ー゠-ヿ])/
+    specs:
+      - from: サーバを起動する。
+        to:   サーバーを起動する。
+      - from: サーバーを起動する。
+        to:   サーバーを起動する。
+      - from: ユーザビリティ
+        to:   ユーザビリティ
+      - from: フィルタリング
+        to:   フィルタリング
+
+  # ── 冗長な表現・重言（建議 Ⅱ-5ウ）──
+
+  - expected: 最初に
+    pattern: まず最初に
+  - expected: 初めに
+    pattern: まず初めに
+  - expected: 違和感を覚え
+    pattern: 違和感を感じ
+  - expected: $1ごとに
+    pattern: /各([^、。\s]{1,8}?)ごとに/
+    specs:
+      - from: 各都道府県ごとに集計する。
+        to:   都道府県ごとに集計する。
+  - expected: 約$1
+    pattern: /約([0-9０-９,，.]+[^、。\s0-9]{0,4}?)(くらい|ぐらい|程度)/
+    specs:
+      - from: 約20名くらいが参加した。
+        to:   約20名が参加した。
+  - expected: 第$1日
+    pattern: /第([0-9０-９]+)日目/
+
+  # ── 文語の名残（建議 Ⅲ-1エ・オ）──
+
+  - expected: のように
+    pattern: のごとく
+  - expected: のような
+    pattern: のごとき
+  - expected: 大きな
+    pattern: 大いなる
+  - expected: すべき
+    pattern: するべき
+    specs:
+      - from: 改善するべき点
+        to:   改善すべき点
+  - expected: するよう
+    pattern: すべく
+    specs:
+      - from: 改善すべく努める。
+        to:   改善するよう努める。
+  - expected: べきである。
+    pattern: /べき。/
+    specs:
+      - from: 見直すべき。
+        to:   見直すべきである。
+  - expected: べきである。
+    pattern: /べし。/
