@@ -9,6 +9,11 @@
       "name": "workflow",
       "source": "./plugins/workflow",
       "description": "指揮役・実装役・レビュー役の3役でプルリクエストを回す開発体制の一式。依頼と報告の書式5つ、CLAUDE.md と CONTRIBUTING.md の雛形、Issue テンプレート2種を含む"
+    },
+    {
+      "name": "kobunsho",
+      "source": "./plugins/kobunsho",
+      "description": "日本語の開発文書を、文化審議会の建議「公用文作成の考え方」に沿って書かせる一式。書き方のスキル、レビュー役のエージェント、textlint で書き換えた範囲を検査する hook、textlint の設定と辞書のひな形を含む"
     }
   ]
 }

@@ -1,0 +1,50 @@
+{
+  "filters": {
+    "allowlist": {
+      "allow": [
+        "塡",
+        "頰",
+        "剝",
+        "々"
+      ]
+    }
+  },
+  "rules": {
+    "preset-ja-technical-writing": {
+      "arabic-kanji-numbers": false,
+      "no-mix-dearu-desumasu": {
+        "preferInHeader": "",
+        "preferInBody": "である",
+        "preferInList": "である",
+        "strict": false
+      },
+      "no-doubled-joshi": {
+        "allow": [
+          "も"
+        ]
+      },
+      "ja-no-mixed-period": {
+        "allowPeriodMarks": [
+          ">"
+        ]
+      }
+    },
+    "joyo-kanji": true,
+    "prh": {
+      "rulePaths": [
+        ".textlint/kobunsho-prh.yml"
+      ]
+    },
+    "kobunsho-kana": {
+      "dictionaryPathList": [
+        ".textlint/kobunsho-kana.js"
+      ]
+    },
+    "@textlint-ja/morpheme-match": {
+      "severity": "warning",
+      "dictionaryPathList": [
+        ".textlint/kobunsho-check.js"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "description": "日本語の文書を書いたあと、プロジェクトの textlint で公用文の規則に照らして指摘を返す。プロジェクトに textlint がなければ何もしない",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v node >/dev/null 2>&1; then node \"${CLAUDE_PLUGIN_ROOT}/scripts/lint-ja.mjs\"; fi",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}
