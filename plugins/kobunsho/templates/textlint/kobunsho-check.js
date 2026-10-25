@@ -36,6 +36,19 @@ const aruNai = [
   }
 ];
 
+// 補助動詞の「見る」「頂く」。補助動詞でも形態素解析で「自立」と判定されるため、
+// 実際に見る・もらう意味（地図を広げて見る）と区別できない（建議 解説 Ⅰ-1(3)ア）
+const hojodoushi = ["て", "で"].flatMap((particle) => [
+  {
+    message: `${PREFIX}補助動詞なら「〜てみる」と仮名で書く。実際に目で見る意味なら漢字のままでよい。`,
+    tokens: [{ surface_form: particle, pos: "助詞", pos_detail_1: "接続助詞" }, { pos: "動詞", basic_form: "見る" }]
+  },
+  {
+    message: `${PREFIX}補助動詞なら「〜ていただく」と仮名で書く。実際に物をもらう意味なら漢字のままでよい。`,
+    tokens: [{ surface_form: particle, pos: "助詞", pos_detail_1: "接続助詞" }, { pos: "動詞", basic_form: "頂く" }]
+  }
+]);
+
 // 「等」「など」は慎重に使う（建議 Ⅱ-5イ(ウ)）
 const nado = [
   {
@@ -77,4 +90,4 @@ const choon = [
   tokens: [{ surface_form: word }]
 }));
 
-module.exports = [...keishikimeishi, ...aruNai, ...nado, ...jisshi, ...beku, ...choon];
+module.exports = [...keishikimeishi, ...aruNai, ...hojodoushi, ...nado, ...jisshi, ...beku, ...choon];

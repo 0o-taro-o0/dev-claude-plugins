@@ -32,62 +32,8 @@ rules:
       - from: 3ヶ国
         to:   3か国
 
-  # ── 補助動詞（建議 解説 Ⅰ-1(3)ア）実際の動作を表すときは漢字のまま ──
-  # 「全て行った」「初めて見る」のように、補助動詞でない組み合わせは除外している。
-
-  - expected: $1い$2
-    pattern: /(?<!全)([てで])行([くかきけこ])/
-    specs:
-      - from: 作業を進めて行く。
-        to:   作業を進めていく。
-      - from: 全て行く。
-        to:   全て行く。
-      - from: テストを全て行った。
-        to:   テストを全て行った。
-  - expected: $1いただ$2
-    pattern: /([てで])頂([くかきけこい])/
-    specs:
-      - from: 確認して頂く。
-        to:   確認していただく。
-  - expected: $1くださ$2
-    pattern: /([てで])下さ([いるらっれ])/
-    specs:
-      - from: 修正して下さい。
-        to:   修正してください。
-  - expected: $1くる
-    pattern: /([てで])来る/
-    specs:
-      - from: 人が増えて来る。
-        to:   人が増えてくる。
-  - expected: $1き$2
-    pattern: /([てで])来(た|て|ま)/
-    specs:
-      - from: 人が増えて来た。
-        to:   人が増えてきた。
-      - from: 改めて来月に行う。
-        to:   改めて来月に行う。
-  - expected: $1こ$2
-    pattern: /([てで])来(な|よ)/
-    specs:
-      - from: 返事が返って来ない。
-        to:   返事が返ってこない。
-  - expected: $1み$2
-    pattern: /(?<!初め|改め|全)([てで])見(る|た|て|ます|まし|ませ|ない|よう|れば)/
-    specs:
-      - from: 試して見る。
-        to:   試してみる。
-      - from: 初めて見る。
-        to:   初めて見る。
-  - expected: $1ほし$2
-    pattern: /([てで])欲し(い|く|かっ|けれ)/
-    specs:
-      - from: 見て欲しい。
-        to:   見てほしい。
-  - expected: $1よ$2
-    pattern: /([てで])良(い|く|かっ|けれ)/
-    specs:
-      - from: 使って良い。
-        to:   使ってよい。
+  # ── 補助動詞は、字面では格助詞の「で」（ブラウザで見る）や副詞（すべて見た）と区別できない。
+  #    品詞で判定する kobunsho-kana.js（エラー）と kobunsho-check.js（警告）で扱う。
 
   # ── 動詞（建議 解説 Ⅰ-1(3)ウ）──
 
@@ -111,7 +57,7 @@ rules:
   # ── 形式名詞（建議 解説 Ⅰ-1(3)ア）綴りで判別できるものだけ。事・時・所・物・者は警告側 ──
 
   - expected: $1とおり
-    pattern: /(の|た|る)通り/
+    pattern: /(の|た|る)通り(?![にをがはへ])/
     specs:
       - from: 以下の通り定める。
         to:   以下のとおり定める。
@@ -119,6 +65,8 @@ rules:
         to:   思ったとおり
       - from: 大通りに面する。
         to:   大通りに面する。
+      - from: 駅前の通りに面する。
+        to:   駅前の通りに面する。
   - expected: $1よう$2
     pattern: /(の|た|る|じ)様(な|に|だ|で)/
     specs:
@@ -173,8 +121,13 @@ rules:
     pattern: 且つ
   - expected: すなわち
     pattern: 即ち
-  - expected: しかし
-    pattern: 然し
+  - expected: $1しかし
+    pattern: /(^|。|、)然し/
+    specs:
+      - from: 然し、問題がある。
+        to:   しかし、問題がある。
+      - from: 当然しなければならない。
+        to:   当然しなければならない。
   - expected: あるいは
     pattern: 或いは
 
@@ -214,7 +167,12 @@ rules:
   - expected: なぜ
     pattern: 何故
   - expected: およそ
-    pattern: 凡そ
+    pattern: /(?<![平非])凡そ/
+    specs:
+      - from: 凡そ3日かかる。
+        to:   およそ3日かかる。
+      - from: 平凡そうに見える。
+        to:   平凡そうに見える。
   - expected: それぞれ
     pattern: /夫々|其々/
   - expected: はず
@@ -231,7 +189,7 @@ rules:
       - from: 進捗する。
         to:   進捗する。
 
-  # ── 表外漢字を含む語の書き換え（建議 解説 Ⅰ-1(2)）開発文書でよく使うもの ──
+  # ── 表外漢字を含む語の書換え（建議 解説 Ⅰ-1(2)）開発文書でよく使うもの ──
 
   - expected: ひも付
     pattern: 紐付
@@ -269,7 +227,12 @@ rules:
   - expected: ずさん
     pattern: 杜撰
   - expected: まれ
-    pattern: 稀
+    pattern: /稀(?=[にな])/
+    specs:
+      - from: 稀に起きる。
+        to:   まれに起きる。
+      - from: 稀有な例
+        to:   稀有な例
 
   # ── 字体（建議 解説 Ⅰ-1(1)イ）常用漢字表の通用字体を用いる ──
 
@@ -301,7 +264,12 @@ rules:
       - from: 作業が終わる。
         to:   作業が終わる。
   - expected: 押さえ
-    pattern: 押え
+    pattern: /(?<!差)押え/
+    specs:
+      - from: 要点を押える。
+        to:   要点を押さえる。
+      - from: 差押えを行う。
+        to:   差押えを行う。
   - expected: 捕らえ
     pattern: 捕え
 
@@ -321,18 +289,17 @@ rules:
         to:   フィルタリング
 
   # ── 冗長な表現・重言（建議 Ⅱ-5ウ）──
+  # 「まず最初に」「従来から」は、解説が「一概に誤りとも言えない」とするため入れない。
 
-  - expected: 最初に
-    pattern: まず最初に
-  - expected: 初めに
-    pattern: まず初めに
   - expected: 違和感を覚え
     pattern: 違和感を感じ
   - expected: $1ごとに
-    pattern: /各([^、。\s]{1,8}?)ごとに/
+    pattern: /各([^、。\sがのをにはでとも]{1,8}?)ごとに/
     specs:
       - from: 各都道府県ごとに集計する。
         to:   都道府県ごとに集計する。
+      - from: 各担当者が週ごとに報告する。
+        to:   各担当者が週ごとに報告する。
   - expected: 約$1
     pattern: /約([0-9０-９,，.]+[^、。\s0-9]{0,4}?)(くらい|ぐらい|程度)/
     specs:

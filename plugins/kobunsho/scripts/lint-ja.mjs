@@ -86,12 +86,21 @@ if (!filePath || !TARGET_EXT.test(filePath) || !existsSync(filePath)) process.ex
 const found = findLintRoot(path.dirname(path.resolve(filePath)));
 if (!found) process.exit(0);
 
-const result = spawnSync(found.bin, ["--format", "json", filePath], {
-  cwd: found.root,
-  encoding: "utf8",
-  maxBuffer: 32 * 1024 * 1024,
-  shell: process.platform === "win32"
-});
+// Windows の textlint.cmd はシェル経由でしか起動できない。パスに空白があっても一つの引数になるよう引用符で囲む
+const isWin = process.platform === "win32";
+const quote = (s) => `"${s}"`;
+const result = isWin
+  ? spawnSync([quote(found.bin), "--format", "json", quote(filePath)].join(" "), {
+      cwd: found.root,
+      encoding: "utf8",
+      maxBuffer: 32 * 1024 * 1024,
+      shell: true
+    })
+  : spawnSync(found.bin, ["--format", "json", filePath], {
+      cwd: found.root,
+      encoding: "utf8",
+      maxBuffer: 32 * 1024 * 1024
+    });
 
 let report;
 try {

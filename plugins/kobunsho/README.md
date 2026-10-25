@@ -10,7 +10,7 @@
 | スキル | `setup` | textlint をプロジェクトに導入する手順。`/kobunsho:setup` で呼び出す |
 | エージェント | `kobunsho-reviewer` | lint で拾えない文の書き方を読んで指摘するレビュー役 |
 | hook | PostToolUse | Write・Edit のあと、書き換えた範囲を textlint で検査し、指摘を Claude に返す |
-| ひな形 | `templates/` | textlint の設定と、kobunsho の辞書2種 |
+| ひな形 | `templates/` | textlint の設定と、kobunsho の辞書3種 |
 
 規則は三つの層で守らせる。
 
@@ -30,14 +30,16 @@
 hook による検査を使うプロジェクトでだけ、一度行う。`/kobunsho:setup` を実行すると、Claude が次の手順を行う。
 
 1. textlint と規則のパッケージを開発用の依存として入れる
-2. `templates/.textlintrc.json` をルートへ、`templates/textlint/` の2ファイルを `.textlint/` へ複写する
+2. `templates/.textlintrc.json` をルートへ、`templates/textlint/` の3ファイルを `.textlint/` へ複写する
 3. `package.json` に `lint:ja` を足し、既存の文書に一度実行して件数を報告する
 
 手で行う場合のコマンドは次のとおり。
 
-    npm install --save-dev textlint textlint-rule-preset-ja-technical-writing textlint-rule-prh @textlint-ja/textlint-rule-morpheme-match textlint-rule-joyo-kanji textlint-filter-rule-allowlist
+    npm install --save-dev textlint textlint-rule-preset-ja-technical-writing textlint-rule-prh @textlint-ja/textlint-rule-morpheme-match textlint-rule-kobunsho-kana@npm:@textlint-ja/textlint-rule-morpheme-match textlint-rule-joyo-kanji textlint-filter-rule-allowlist
 
-hook は、textlint の設定ファイルと textlint 本体がそろっているプロジェクトでだけ動く。どちらかがなければ何もしない。Node.js が入っていない環境でも何もしない。
+`textlint-rule-kobunsho-kana` は、形態素で照合する規則を別名で入れたものである。同じ規則を、エラー用（補助動詞）と警告用（文脈で判断する語）の二つとして読み込むために使う。
+
+hook は、textlint の設定ファイルと textlint 本体がそろっているプロジェクトでだけ動く。どちらかがなければ何もしない。Node.js が入っていない環境でも何もしない。hook のコマンドは sh の書式で書いているため、Windows では Git Bash が必要である。
 
 ## hook の動き
 
@@ -51,13 +53,14 @@ hook は、textlint の設定ファイルと textlint 本体がそろってい�
 |---|---|---|
 | `preset-ja-technical-writing` | エラー | 文の長さ、二重否定、助詞の連続、冗長な表現、常体と敬体の混在など |
 | `joyo-kanji` | エラー | 常用漢字表にない漢字。「塡」「頰」「剝」「々」は許可している |
-| `prh`（`kobunsho-prh.yml`） | エラー | 字面で確実に判定できる表記。「3ヶ所→3か所」「出来る→できる」「て下さい→てください」「サーバ→サーバー」など |
-| `morpheme-match`（`kobunsho-check.js`） | 警告 | 文脈で正誤が変わる語。形式名詞の「事・時・所・物・者」、「有る・無い」、「等」、「-ry」で終わる外来語など |
+| `prh`（`kobunsho-prh.yml`） | エラー | 字面で確実に判定できる表記。「3ヶ所→3か所」「出来る→できる」「以下の通り→以下のとおり」「サーバ→サーバー」など |
+| `kobunsho-kana`（`kobunsho-kana.js`） | エラー | 補助動詞。接続助詞の「て」「で」に補助動詞が続く場合だけを品詞で判定する（進めて行く→進めていく、修正して下さい→修正してください）。格助詞の「で」（電車で行く）には一致しない |
+| `morpheme-match`（`kobunsho-check.js`） | 警告 | 文脈で正誤が変わる語。形式名詞の「事・時・所・物・者」、補助動詞の「見る・頂く」、「有る・無い」、「等」、「-ry」で終わる外来語など |
 
-既存の規則のうち、建議と食い違うものは無効にした。
+建議と食い違う既存の規則は、次のように扱った。
 
-- `arabic-kanji-numbers`：「一つ→1つ」を求めるが、建議では「一つ、二つ」と書く
-- ひらがな化の規則（形式名詞・副詞・補助動詞）：建議では漢字で書く「既に」や、特定の対象を指す「達した時」まで仮名にさせる。代わりに kobunsho の辞書で、建議の語の一覧どおりに判定する
+- `arabic-kanji-numbers`（`preset-ja-technical-writing` に含まれる）：「一つ→1つ」を求めるが、建議では「一つ、二つ」と書く。`.textlintrc.json` で無効にした
+- ひらがな化の規則（`textlint-rule-ja-hiragana-keishikimeishi`、`-fukushi`、`-hojodoushi`）：建議では漢字で書く「既に」や、特定の対象を指す「達した時」まで仮名にさせる。採用せず、kobunsho の辞書で建議の語の一覧どおりに判定する
 
 ## 調整
 

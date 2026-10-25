@@ -13,11 +13,13 @@ disable-model-invocation: true
 1. プロジェクトのルートに `package.json` があるかを確かめる。ない場合は、`npm init -y` で作ってよいかをオーナーに確認してから作る。
 2. 次のパッケージを開発用の依存として入れる。
 
-       npm install --save-dev textlint textlint-rule-preset-ja-technical-writing textlint-rule-prh @textlint-ja/textlint-rule-morpheme-match textlint-rule-joyo-kanji textlint-filter-rule-allowlist
+       npm install --save-dev textlint textlint-rule-preset-ja-technical-writing textlint-rule-prh @textlint-ja/textlint-rule-morpheme-match textlint-rule-kobunsho-kana@npm:@textlint-ja/textlint-rule-morpheme-match textlint-rule-joyo-kanji textlint-filter-rule-allowlist
 
-3. このスキルのディレクトリから見て `../../templates/` にあるひな形を複写する。
-   - `templates/.textlintrc.json` → プロジェクトのルート
-   - `templates/textlint/kobunsho-prh.yml`、`templates/textlint/kobunsho-check.js` → プロジェクトの `.textlint/`
+   `textlint-rule-kobunsho-kana` は、`@textlint-ja/textlint-rule-morpheme-match` を別名で入れたものである。同じ規則をエラー用と警告用の二つとして読み込むために使う。
+
+3. ひな形を複写する。
+   - `${CLAUDE_PLUGIN_ROOT}/templates/.textlintrc.json` → プロジェクトのルート
+   - `${CLAUDE_PLUGIN_ROOT}/templates/textlint/` の3ファイル（`kobunsho-prh.yml`、`kobunsho-kana.js`、`kobunsho-check.js`）→ プロジェクトの `.textlint/`
 4. `package.json` の `scripts` に、手で検査するためのコマンドを足す。
 
        "lint:ja": "textlint \"**/*.md\""
